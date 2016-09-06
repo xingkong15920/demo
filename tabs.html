@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			.active{
+				background-color:gray;
+			}
+			#box1 div,#box2 div{
+				display:none;
+				width:100px;
+				height:100px;
+				border:1px solid black;
+			}
+			#box1 div.show,#box2 div.show{
+				display:block;
+			}
+			#btnbox{
+				width:70px;
+				position:absolute;
+				left:140px;
+				top:15px;
+			}
+			#btnbox input{
+				width: 100%;
+				display:block;
+				margin-bottom:5px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="box1">
+			<input type="button" name="" id="" value="一" class="active"/>
+			<input type="button" name="" id="" value="二" />
+			<input type="button" name="" id="" value="三" />
+			<div class="show">11111111111</div>
+			<div>22222222222</div>
+			<div>33333333333</div>
+		</div>
+		<div id="box2">
+			<input type="button" name="" id="" value="一" class="active"/>
+			<input type="button" name="" id="" value="二" />
+			<input type="button" name="" id="" value="三" />
+			<div class="show">11111111111</div>
+			<div>22222222222</div>
+			<div>33333333333</div>
+		</div>
+		<div id="btnbox">
+			<input type="button" id="" value="一自动" />
+			<input type="button" id="" value="二自动" />
+			<input type="button" id="" value="一反向" />
+			<input type="button" id="" value="二反向" />
+			<input type="button" id="" value="同自动" />
+			<input type="button" id="" value="同反向" />
+		</div>
+		<script>
+			//面向对象开始
+			function Init(id) {
+				this.box = document.getElementById(id);
+				this.inputs = this.box.getElementsByTagName('input');
+				this.divs = this.box.getElementsByTagName('div');
+				console.log(this.box);
+				this.num = 0;
+				this.timer = null;
+			}
+			
+			Init.prototype.events = function() {
+				var _this = this;
+				for(var i = 0 ; i < this.inputs.length;i++){
+					this.inputs[i].index = i;
+					this.inputs[i].onclick = function() {
+						_this.num = this.index;
+						_this.Tab();
+					}
+				}
+			}
+			Init.prototype.Tab = function(){
+				for(var i = 0 ; i < this.inputs.length;i++){
+					this.inputs[i].className = '';
+					this.divs[i].className = '';
+				}
+				this.inputs[this.num].className = 'active';
+				this.divs[this.num].className = 'show';
+			}
+			//自动播放
+			Init.prototype.Play = function() {
+				var _this = this;
+				clearInterval(this.timer);
+				this.timer = setInterval(function(){
+					_this.num++;
+					_this.num%= _this.inputs.length;
+					_this.Tab();
+				},500)
+			}
+			Init.prototype.Stop = function() {
+				clearInterval(this.timer);
+				this.timer = null;
+			}
+			Init.prototype.IsTimer = function() {
+				return !!this.timer;
+			}
+			var t1 = new Init('box1');
+			var t2 = new Init('box2');
+			t1.events();
+			t2.events();
+			//获取按钮盒子
+			var btnBox = document.getElementById('btnbox');
+			var btns = btnBox.getElementsByTagName('input');
+			console.log(btns);
+			btns[0].onclick =function() {
+				t1.Play();
+			}
+			btns[1].onclick =function() {
+				t2.Play();
+			}
+			btns[2].onclick = function() {
+				//console.log(t1.IsTimer())
+				if(t1.IsTimer()){
+					t1.Stop();
+				}else{
+					t1.Play();
+				}
+			}
+			btns[3].onclick = function() {
+				//console.log(t2.IsTimer())
+				if(t2.IsTimer()){
+					t2.Stop();
+				}else{
+					t2.Play();
+				}
+			}
+			btns[4].onclick = function(){
+				t1.Play();
+				t2.Play();
+			}
+			btns[5].onclick = function() {
+				if(t1.IsTimer()){
+					t1.Stop();
+				}else{
+					t1.Play();
+				}
+				if(t2.IsTimer()){
+					t2.Stop();
+				}else{
+					t2.Play();
+				}
+			}
+		</script>
+	</body>
+</html>
